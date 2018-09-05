@@ -1,0 +1,17 @@
+{
+  "name": "vue-js-workshop",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "eslint": "^4.9.0",
+    "eslint-config-vue": "^2.0.2",
+    "eslint-plugin-vue": "^2.1.0"
+  }
+}

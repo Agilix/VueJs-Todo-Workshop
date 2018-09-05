@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Todo list</title>
+    <style>
+        .done {
+            text-decoration: line-through;
+        }
+        ul {
+            list-style: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="app">
+        <h3>{{ doneCount }} done out of {{ todos.length }}</h3>
+        <ul>
+            <todo-item
+                v-for="todo in todos"
+                :todo="todo"
+                :key="todo.id"
+                @toggle="toggleTodoDone"
+                @update-text="updateTodoText"
+                @delete-todo="deleteTodo"
+            >
+            </todo-item>
+        </ul>
+
+        <input type="text" v-model="newTodoText" @keydown.enter="addTodo">
+        <button @click="addTodo">Add todo</button>
+    </div>
+
+    <script src="vue.js"></script>
+    <script>
+
+        Vue.component('todo-item', {
+            template: `
+                <li :class="{done: todo.done}">
+                    <input type="checkbox" @click="$emit('toggle', todo)" :checked="todo.done">
+                    <input
+                     type="text"
+                     v-if="isEditing"
+                     :value="todo.text"
+                     @keydown.enter="finishEdit"
+                     >
+                    <span v-else @click="isEditing = !isEditing">{{ todo.text }}</span>
+                    <button  @click="$emit('delete-todo', todo)" >x</button>
+                </li>
+            `,
+            props: ['todo'],
+            data () {
+                return {
+                    isEditing: false,
+                }
+            },
+            methods: {
+                finishEdit (event) {
+                    const newText = event.target.value;
+                    this.$emit('update-text', this.todo, newText);
+                    this.isEditing = false;
+                }
+            }
+        });
+
+        const vm = new Vue({
+            el: '#app',
+            data: {
+                todos: [
+                    {text: 'Buy milk!', done: true, id: 1},
+                    {text: 'Master vueJS!', done: false, id: 2},
+                ],
+                newTodoText: ''
+            },
+            methods: {
+                toggleTodoDone (todo) {
+                    todo.done = !todo.done;
+                },
+                addTodo (event) {
+                    this.todos.push({
+                        text: this.newTodoText,
+                        done: event.shiftKey,
+                        id: this.todos.length
+                    });
+                    this.newTodoText = '';
+                },
+                updateTodoText (todo, newText) {
+                    if(newText.trim() === '') {
+                        return;
+                    }
+                    todo.text = newText.trim();
+                },
+                deleteTodo (todoItem) {
+                    this.todos = this.todos.filter(function(todo){
+                        return todo.id !== todoItem.id;
+                    });
+                }
+            },
+            computed: {
+                doneCount () {
+                    return this.todos.filter(todo => todo.done).length;
+                }
+            }
+        })
+    </script>
+</body>
+</html>
